@@ -1,0 +1,7 @@
+pymoo
+rasterio
+shapely
+numpy
+pandas
+matplotlib
+geopandas

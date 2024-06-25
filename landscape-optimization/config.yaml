@@ -1,0 +1,18 @@
+alpha: 0.1
+bldg_dmg_dir: sub_data/building_damage/
+bottom_bound: 4166059.191862269
+budget:
+- 10
+- 15
+- 20
+burned_area_dir: sub_data/burned_area/
+full_ignitions_file_path: sub_data/yosemite_ignitions_firesize_100ac.csv
+habitat_dmg_dir: sub_data/habitat_damage/
+intensity_dir: sub_data/intensity/
+left_bound: 790183.4205919994
+prevention_file_path: sub_data/prevention_table.csv
+results_dir: results/prototype_run/
+right_bound: 807093.4205919994
+rx_burn_units_path: sub_data/rx_burn/RX_Burn_Units.shp
+top_bound: 4152699.191862269
+values_file_path: sub_data/values_table.csv
