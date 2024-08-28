@@ -1,29 +1,69 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: python-job-with-download
+  name: landscape-optimization-preprocessing-6
 spec:
   template:
     metadata:
-      name: python-job-with-download
+      name: landscape-optimization-preprocessing
+      labels:
+        app: landscape-optimization-preprocessing
     spec:
       restartPolicy: Never
       initContainers:
         - name: download-files
-          image: busybox
+          image: alpine/curl
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '199m'
+            limits:
+              memory: '300Mi'
+              cpu: '200m'
           command:
             - /bin/sh
             - -c
             - |
-              wget -O /data/file1.txt https://example.com/file1.txt
-              wget -O /data/file2.txt https://example.com/file2.txt
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/building_damage.tar.gz -o /data/building_damage.tar.gz
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/burned_area.tar.gz -o /data/burned_area.tar.gz
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/habitat_damage.tar.gz -o /data/habitat_damage.tar.gz
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/initial_hazard.tif -o /data/initial_hazard.tif
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/intensity.tar.gz -o /data/intensity.tar.gz
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/merged_hazard.tif -o /data/merged_hazard.tif
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/prevention_table.csv -o /data/prevention_table.csv
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/rx_burn.tar.gz -o /data/rx_burn.tar.gz
+              curl -k https://data.mint.isi.edu/files/LandscapeOptimization2/yosemite_ignitions_firesize_100ac.csv -o /data/yosemite_ignitions_firesize_100ac.csv
           volumeMounts:
             - name: shared-data
               mountPath: /data
       containers:
-        - name: main-python-job
-          image: python:3.9
-          command: ['python', '-c', "print('Hello from main container!')"]
+        - name: main
+          image: ghcr.io/mosoriob/landscape-optimization-mint:sha-dbd538e
+          resources:
+            requests:
+              memory: '8Gi'
+              cpu: '2'
+            limits:
+              memory: '9Gi'
+              cpu: '2.1'
+          workingDir: /tmp
+          command:
+            [
+              '/bin/bash',
+              '/landopt/preprocess.sh',
+              '--full_ignitions_file',
+              '/data/yosemite_ignitions_firesize_100ac.csv',
+              '--rx_burn_units_file',
+              '/data/rx_burn.tar.gz',
+              '--burned_area_file',
+              '/data/burned_area.tar.gz',
+              '--building_damage_file',
+              '/data/building_damage.tar.gz',
+              '--habitat_damage_file',
+              '/data/habitat_damage.tar.gz',
+              '--intensity_file',
+              '/data/intensity.tar.gz',
+            ]
           volumeMounts:
             - name: shared-data
               mountPath: /data
