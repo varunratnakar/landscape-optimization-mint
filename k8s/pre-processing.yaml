@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: python-job-with-download
+spec:
+  template:
+    metadata:
+      name: python-job-with-download
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: download-files
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              wget -O /data/file1.txt https://example.com/file1.txt
+              wget -O /data/file2.txt https://example.com/file2.txt
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+      containers:
+        - name: main-python-job
+          image: python:3.9
+          command: ['python', '-c', "print('Hello from main container!')"]
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+      volumes:
+        - name: shared-data
+          emptyDir: {}
