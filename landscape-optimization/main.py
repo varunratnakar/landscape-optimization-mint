@@ -37,8 +37,8 @@ from rasterio.transform import Affine
 from rasterio.windows import Window
 from shapely.geometry import MultiPolygon, Point, box
 from shapely.geometry.polygon import Polygon
-
 from preprocess_p1 import get_truncated_ignitions, get_burn_area_values
+
 import utils
 import subprocess
 import sys
@@ -120,7 +120,7 @@ def save_results(res1, res1_200, res1_500, res1_1000, result_subsets, file_paths
             cost = res1.G[idx][0]
             # print(item, cost)
             for i in item:
-                f.write("%s," % (-i * alpha))
+                f.write("%s," % (-i))
             # print(cost, budget, cost+budget)
             f.write("%s" % (cost + budget))
             f.write("\n")
@@ -160,7 +160,6 @@ if __name__ == "__main__":
         bldg_dmg_dir = config['bldg_dmg_dir']
         habitat_dmg_dir = config['habitat_dmg_dir']
         budget = config['budget']
-        alpha = config['alpha']
 
     # Check if the budget is a single number or a list containing multiple budgets, 
     if isinstance(budget, list):
@@ -187,15 +186,11 @@ if __name__ == "__main__":
         sys.exit()
 
     # Preprocessing 
-    full_ignitions_df = pd.read_csv(full_ignitions_file_path)
-    #full_ignitions_df = []
+    #full_ignitions_df = pd.read_csv(full_ignitions_file_path)
+    full_ignitions_df = []
     burn_file_names = glob(os.path.join(burned_area_dir, '*.tif'))
     bldg_dmg_file_names = glob(os.path.join(bldg_dmg_dir, '*.tif'))
     habitat_dmg_file_names = glob(os.path.join(habitat_dmg_dir, '*.tif'))
-
-    # Update bounds again
-    truncated_ignitions_df = get_truncated_ignitions(full_ignitions_df, burn_file_names)
-    values_df = get_burn_area_values(truncated_ignitions_df, burned_area_dir, bldg_dmg_file_names, habitat_dmg_file_names, config)
 
     print("Run main function")
 

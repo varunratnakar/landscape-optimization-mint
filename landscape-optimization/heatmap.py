@@ -54,7 +54,6 @@ if __name__ == '__main__':
         complete_rb = config['right_bound']
         complete_tb = config['top_bound']
         complete_bb = config['bottom_bound']
-        alpha = config['alpha']
 
     # Check if the budget is a single number or a list containing multiple budgets, 
     if isinstance(budget, list):
@@ -127,6 +126,8 @@ if __name__ == '__main__':
     xdim = int(math.ceil(complete_bb - complete_tb))//10
     ydim = int(math.ceil(complete_rb - complete_lb))//10
 
+    bldg_dmg_values = []
+
     for poly_idx in range(len(prevention_df)):
         if used_mask[poly_idx] == False:
             plan_heat_array.append([])
@@ -145,7 +146,7 @@ if __name__ == '__main__':
             file_name = raster_row['filename']
             # print(file_name)
 
-            raster = rasterio.open(os.path.join(burned_area_dir, 'burned_area-' + file_name + '.tif'))
+            raster = rasterio.open(burned_area_dir + 'burned_area-' + file_name + '.tif')
             xmin, ymin, xmax, ymax = raster.bounds
             img = raster.read(1)
             try:
@@ -155,8 +156,9 @@ if __name__ == '__main__':
                 continue
             raster.close()
 
-            if raster_row['bldg_dmg'].astype(int) > 0:
-                raster = rasterio.open(os.path.join(bldg_dmg_dir, 'building_damage-' + file_name + '.tif'))
+            if raster_row['bldg_dmg'].astype(float) > 0:
+                # print('trying to open: ', bldg_dmg_dir + 'building_damage-' + file_name + '.tif')
+                raster = rasterio.open(bldg_dmg_dir + 'building_damage-' + file_name + '.tif')
                 xmin, ymin, xmax, ymax = raster.bounds
                 img = raster.read(1)
                 try:
@@ -166,8 +168,8 @@ if __name__ == '__main__':
                     continue
                 raster.close()
 
-            if raster_row['habitat_dmg'].astype(int) > 0:
-                raster = rasterio.open(os.path.join(habitat_dmg_dir, 'habitat_damage-' + file_name + '.tif'))
+            if raster_row['habitat_dmg'].astype(float) > 0:
+                raster = rasterio.open(habitat_dmg_dir + 'habitat_damage-' + file_name + '.tif')
                 xmin, ymin, xmax, ymax = raster.bounds
                 img = raster.read(1)
                 try:
@@ -180,6 +182,10 @@ if __name__ == '__main__':
         plan_heat_array.append(csr_matrix(heat_array))
         plan_heat_array_bldg.append(csr_matrix(heat_array_bldg))
         plan_heat_array_habi.append(csr_matrix(heat_array_habi))
+
+        bldg_dmg_values.append(np.sum(heat_array_bldg))
+    
+    print(bldg_dmg_values)
     
     if results_dir[-1] != '/':
         init_hazard_file_path = os.path.join(os.path.dirname(results_dir), 'initial_Hazard.tif')
@@ -204,11 +210,13 @@ if __name__ == '__main__':
     for i,plan in enumerate(result_subsets[0:]):
         # print(i)
         start = time_ns()
-        heat_array_burn_prob = alpha / total_files * np.sum([plan_heat_array[idx] for idx in plan.astype(int)], axis=0).toarray()
+        heat_array_burn_prob = np.sum([plan_heat_array[idx] for idx in plan.astype(int)], axis=0).toarray() / total_files
         heat_array = heat_array_burn_prob * hazard_values
-        heat_array_bldg = alpha / total_files * np.sum([plan_heat_array_bldg[idx] for idx in plan.astype(int)], axis=0).toarray()
-        heat_array_habi = alpha / total_files * np.sum([plan_heat_array_habi[idx] for idx in plan.astype(int)], axis=0).toarray()
+        heat_array_bldg = np.sum([plan_heat_array_bldg[idx] for idx in plan.astype(int)], axis=0).toarray() / total_files
+        heat_array_habi = np.sum([plan_heat_array_habi[idx] for idx in plan.astype(int)], axis=0).toarray() / total_files
         
+        print('theoretical bldg dmg: ', np.sum(heat_array_bldg[idx] for idx in plan.astype(int)) / total_files)
+
         print("Plan ", i, " - Skipped: ", skipped)
         
         with rasterio.open(os.path.join(heatmap_res_dir, 'heatmaps/Hazard_{}.tif'.format(i+1)),
@@ -221,8 +229,22 @@ if __name__ == '__main__':
                                 crs=raster.crs,
                                 transform = transform,
                                 compress = 'ZSTD') as dst:
-                    dst.write(heat_array / total_files, 1)
+                    dst.write(heat_array, 1)
                     dst.close()
+        
+        with rasterio.open(os.path.join(heatmap_res_dir, 'heatmaps/burn_prob_{}.tif'.format(i+1)),
+                                'w',
+                                driver='GTiff',
+                                height = heat_array.shape[0],
+                                width = heat_array.shape[1],
+                                count=1,
+                                dtype=heat_array.dtype,
+                                crs=raster.crs,
+                                transform = transform,
+                                compress = 'ZSTD') as dst:
+                    dst.write(heat_array_burn_prob, 1)
+                    dst.close()
+
         # raster.close()
         with rasterio.open(os.path.join(heatmap_res_dir, 'heatmaps/Habitat_Dmg_{}.tif'.format(i+1)),
                                 'w',
@@ -236,7 +258,7 @@ if __name__ == '__main__':
                                 compress = 'ZSTD') as dst:
                     dst.write(heat_array_habi, 1)
                     dst.close()
-        with rasterio.open(os.path.join(heatmap_res_dir, 'heatmaps/Bldg_Dmg{}.tif'.format(i+1)),
+        with rasterio.open(os.path.join(heatmap_res_dir, 'heatmaps/Bldg_Dmg_{}.tif'.format(i+1)),
                                 'w',
                                 driver='GTiff',
                                 height = heat_array.shape[0],

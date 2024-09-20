@@ -5,6 +5,7 @@ from collections import defaultdict
 from glob import glob
 # from pathlib import Path
 from time import time_ns
+import sys
 
 import yaml
 import geopandas as gpd
@@ -65,7 +66,7 @@ def get_truncated_ignitions(full_ignitions_df, burn_file_names):
 ## Call to get truncated ignitions list
 #truncated_ignitions_df = get_truncated_ignitions(full_ignitions_df, burn_file_names)
 
-def get_burn_area_values(truncated_ignitions_df, burned_area_dir, bldg_dmg_file_names, habitat_dmg_file_names, config):
+def get_burn_area_values(truncated_ignitions_df):
     values_df = pd.DataFrame(columns = ['filename', 'x_ignition', 'y_ignition', 
                                     'burn_area', 'bldg_dmg', 'habitat_dmg', 'xmin', 'ymin', 'xmax', 'ymax'])
     values_df[['filename', 'x_ignition', 'y_ignition']] =  truncated_ignitions_df[['filename', 'x_ignition', 'y_ignition']]
@@ -164,6 +165,7 @@ def get_burn_area_values(truncated_ignitions_df, burned_area_dir, bldg_dmg_file_
     return values_df
 
 def write_csv_to_file(file_path, data):
+    print('Writing to file:', file_path)
     data.to_csv(file_path, index=False)
 
 def point_in_poly(point, polygon):
@@ -210,8 +212,14 @@ def generate_prevention_df(rx_burn_units_path, values_df):
     return prevention_df
 
 if __name__ == "__main__":
-    # load the paths to files from yaml file
-    with open('config.yaml') as f:
+    # check if there is a config file in the arguments
+    if len(sys.argv) > 1:
+        config_file_name = sys.argv[1]
+    else:
+        config_file_name = 'config.yaml'
+
+    # load the paths to files from yaml file with read permissions
+    with open(config_file_name, 'r') as f:
         config = yaml.safe_load(f)
         rx_burn_units_path = config['rx_burn_units_path']
         values_file_path = config['values_file_path']
@@ -241,14 +249,14 @@ if __name__ == "__main__":
 
     ## Call when values_df needs to be created
     truncated_ignitions_df = get_truncated_ignitions(full_ignitions_df, burn_file_names)
-    values_df = get_burn_area_values(truncated_ignitions_df, burned_area_dir, bldg_dmg_file_names, habitat_dmg_file_names, config)
+    values_df = get_burn_area_values(truncated_ignitions_df)
     write_csv_to_file(values_file_path, values_df)
 
     # ## Call to generate prevention_df
-    prevention_df = generate_prevention_df(rx_burn_units_path, values_df)
-    write_csv_to_file(prevention_file_path, prevention_df)
+    # prevention_df = generate_prevention_df(rx_burn_units_path, values_df)
+    # write_csv_to_file(prevention_file_path, prevention_df)
 
-    print("Generated prevention df")
+    # print("Generated prevention df")
 
     complete_lb = config['left_bound']
     complete_bb = config['bottom_bound']
@@ -300,8 +308,6 @@ if __name__ == "__main__":
                             transform = transform) as dst:
                 dst.write(heat_array_area / total_files, 1)
                 dst.close()
-    
-    # print('print burn prob rasters.')
 
     for file_name in bldg_dmg_file_names:
         try:
@@ -353,5 +359,5 @@ if __name__ == "__main__":
                             dtype=heat_array_area.dtype,
                             crs=raster.crs,
                             transform = transform) as dst:
-                dst.write(heat_array_bldg / (total_files * 100), 1)
+                dst.write(heat_array_bldg / (total_files), 1)
                 dst.close()

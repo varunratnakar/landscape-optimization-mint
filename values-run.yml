@@ -28,5 +28,3 @@ initial_hazard_file:
 merged_hazard_file:
  class: File
  location: ./data/merged_hazard.tif  
-alpha: 0.1
-budget: 15

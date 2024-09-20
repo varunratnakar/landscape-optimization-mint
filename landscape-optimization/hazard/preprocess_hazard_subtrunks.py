@@ -17,7 +17,7 @@ import pandas as pd
 import rasterio
 import rioxarray as rxr
 
-CPU = 2
+CPU = 64
 
 def process_files(file_names, lb, rb, tb, bb, client):
     

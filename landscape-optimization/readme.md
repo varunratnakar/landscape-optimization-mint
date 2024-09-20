@@ -17,8 +17,16 @@ Besides normal python, you need to install ***shapely***, ***numpy***, ***pymoo*
 
 # Hyperparameters
 
-$\alpha$ denotes the extent of each prescribed burn to reduce potential risk. Should be a real number between 0 and 1.
 Other parameters are related to data locations, please set accordingly. 
+
+The code require the intensity files, building damage, habitat damage, and the burned area as rasters. The candidate burn units should be provided as multi-polygon shapefile, and ignition points already saved in a csv. 
+
+# Outputs
+
+
+Here is the corrected version of the sentence:
+
+The code in this repo will output two intermediate CSV files, ```prevention_tables.csv``` and ```values.csv```, which are used by the repo itself. For later visualization, the current code will generate a set of initial damage rasters, a set of rasters describing the damage after the prescribed burn, and a pair of CSV files, ```solutions.csv``` and ```solution_values.csv```, to describe the overall information of each solution 
 
 # Running 
 
@@ -29,5 +37,5 @@ For first time running, do the following step by step:
 - ```python main.py```: this is the main code doing optimization.
 - ```python heatmap.py```: this is to read the results from optimization, and generate heatmaps that will be used for visualization.
 
-When running again with some change on the budget or the $\alpha$, only the last two code need to be re-run. 
+When running again with some change on the budget, only the last two code need to be re-run. 
 

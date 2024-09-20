@@ -15,7 +15,7 @@ ulimit -n 10000
 nohup dask scheduler --port $port 2>&1 >/dev/null &
 spid=$!
 
-nohup dask worker --nthreads 1 --nworkers 32 --memory-limit 3.8GB tcp://localhost:$port 2>&1 >/dev/null &
+nohup dask worker --nthreads 1 --nworkers 64 --memory-limit 3.8GB tcp://localhost:$port 2>&1 >/dev/null &
 wpid=$!
 
 find results/hazard_config/ -type f | sort | xargs ./preprocess_hazard_subtrunks.py -s tcp://localhost:$port -m $max -c

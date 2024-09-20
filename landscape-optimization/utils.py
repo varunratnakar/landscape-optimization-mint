@@ -144,9 +144,10 @@ class MyMutation(Mutation):
             is_false = np.where(np.logical_not(X[i, :]))[0]
             is_true = np.where(X[i, :])[0]
             X[i, np.random.choice(is_true)] = False
+            rand_idx = np.random.choice(is_false)
             # print(is_false, X[i])
-            if problem.n_max >= np.sum(problem.areas[is_false]) + np.sum(problem.areas[np.where(X[i, :])[0]]):
-                X[i, np.random.choice(is_false)] = True
+            if problem.n_max >= np.sum(problem.areas[rand_idx]) + np.sum(problem.areas[np.where(X[i, :])[0]]):
+                X[i, rand_idx] = True
 
         return X
 
@@ -193,6 +194,7 @@ class HazardProblem(ElementwiseProblem):
                  ):
         
         self.non_zero_idx = np.where(prevention_df.burned_area > 0)[0]
+        print('non_zero_idx:')
         print(self.non_zero_idx)
         super().__init__(n_var=len(self.non_zero_idx), n_obj=3, n_constr=1)
         # choose the subset of values_df and prevention_df that are non-zero

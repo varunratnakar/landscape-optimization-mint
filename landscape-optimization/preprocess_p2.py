@@ -100,6 +100,7 @@ def get_burn_area_values(original_values_df_path, hazard_raster_path):
     return values_df
 
 def write_csv_to_file(file_path, data):
+    print('writing to', file_path)
     data.to_csv(file_path, index=False)
 
 
@@ -180,6 +181,10 @@ if __name__ == '__main__':
         habitat_dmg_dir = config['habitat_dmg_dir']
         intensity_dir = config['intensity_dir']
         budget = config['budget']
+        complete_lb = config['left_bound']
+        complete_rb = config['right_bound']
+        complete_tb = config['top_bound']
+        complete_bb = config['bottom_bound']
         
 
     intensity_file_names = glob(os.path.join(intensity_dir, '*.tif'))
@@ -187,7 +192,6 @@ if __name__ == '__main__':
     total_files = len(intensity_file_names)
     print('total simulated burns =', total_files)
     
-    complete_lb, complete_rb, complete_tb, complete_bb = [753003.071258364, 839057.6399108863, 4133476.546731642, 4230634.714689108]
     transform = Affine(10, 0.0, complete_lb, 
                     0.0, -10, complete_bb)
     
