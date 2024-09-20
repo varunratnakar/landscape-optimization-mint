@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -xe
 FULL_IGNITIONS_FILE=""
 RX_BURN_UNITS_FILE=""
 BURNED_AREA_FILE=""
@@ -55,7 +55,7 @@ while [[ $# -gt 0 ]]; do
         echo "Processing 'prevention_table_file' option. Input argument is '$2'"
         PREVENTION_TABLE_FILE=$2
         shift 2
-        ;;           
+        ;;
     -z | --initial_hazard_file)
         echo "Processing 'initial_hazard_file' option. Input argument is '$2'"
         INITIAL_HAZARD_FILE=$2
@@ -117,7 +117,7 @@ OUTPUT_VALUES_TABLE=${OUTPUTS}/values_table.csv
 rm -f -r $SCRATCH $INPUTS $OUTPUTS
 
 mkdir $SCRATCH $INPUTS $OUTPUTS
-mkdir $RX_BURN_UNITS_DIR $BURNED_AREA_DIR $BUILDING_DAMAGE_DIR 
+mkdir $RX_BURN_UNITS_DIR $BURNED_AREA_DIR $BUILDING_DAMAGE_DIR
 mkdir $HABITAT_DAMAGE_DIR $INTENSITY_DIR $RESULTS_DIR
 
 cp $FULL_IGNITIONS_FILE $FULL_IGNITIONS_CSV
@@ -135,10 +135,10 @@ tar -xzf $INTENSITY_FILE -C $INTENSITY_DIR >/dev/null 2>&1
 {
   echo "alpha: $ALPHA"
   echo "budget: $BUDGET"
-  echo "full_ignitions_file_path: $FULL_IGNITIONS_CSV"  
-  echo "rx_burn_units_path: $RX_BURN_UNITS_DIR"  
+  echo "full_ignitions_file_path: $FULL_IGNITIONS_CSV"
+  echo "rx_burn_units_path: $RX_BURN_UNITS_DIR"
   echo "burned_area_dir: $BURNED_AREA_DIR"
-  echo "bldg_dmg_dir: $BUILDING_DAMAGE_DIR"  
+  echo "bldg_dmg_dir: $BUILDING_DAMAGE_DIR"
   echo "habitat_dmg_dir: $HABITAT_DAMAGE_DIR"
   echo "intensity_dir: $INTENSITY_DIR"
   echo "results_dir: $RESULTS_DIR"
