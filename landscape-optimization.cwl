@@ -47,10 +47,6 @@ inputs:
     inputBinding:
       prefix: --merged_hazard_file
     type: File          
-  alpha:
-    inputBinding:
-      prefix: --alpha
-    type: float
   budget:
     inputBinding:
       prefix: --budget
