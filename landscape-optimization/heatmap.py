@@ -146,7 +146,7 @@ if __name__ == '__main__':
             file_name = raster_row['filename']
             # print(file_name)
 
-            raster = rasterio.open(burned_area_dir + 'burned_area-' + file_name + '.tif')
+            raster = rasterio.open(os.path.join(burned_area_dir, 'burned_area-' + file_name + '.tif'))
             xmin, ymin, xmax, ymax = raster.bounds
             img = raster.read(1)
             try:
@@ -158,7 +158,7 @@ if __name__ == '__main__':
 
             if raster_row['bldg_dmg'].astype(float) > 0:
                 # print('trying to open: ', bldg_dmg_dir + 'building_damage-' + file_name + '.tif')
-                raster = rasterio.open(bldg_dmg_dir + 'building_damage-' + file_name + '.tif')
+                raster = rasterio.open(os.path.join(bldg_dmg_dir, 'building_damage-' + file_name + '.tif'))
                 xmin, ymin, xmax, ymax = raster.bounds
                 img = raster.read(1)
                 try:
@@ -169,7 +169,7 @@ if __name__ == '__main__':
                 raster.close()
 
             if raster_row['habitat_dmg'].astype(float) > 0:
-                raster = rasterio.open(habitat_dmg_dir + 'habitat_damage-' + file_name + '.tif')
+                raster = rasterio.open(os.path.join(habitat_dmg_dir, 'habitat_damage-' + file_name + '.tif'))
                 xmin, ymin, xmax, ymax = raster.bounds
                 img = raster.read(1)
                 try:
