@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+#set -xe
 FULL_IGNITIONS_FILE=""
 RX_BURN_UNITS_FILE=""
 BURNED_AREA_FILE=""
@@ -11,7 +11,7 @@ PREVENTION_TABLE_FILE=""
 INITIAL_HAZARD_FILE=""
 MERGED_HAZARD_FILE=""
 
-ALPHA=0.1
+#ALPHA=0.1
 BUDGET=10
 
 while [[ $# -gt 0 ]]; do
@@ -66,11 +66,11 @@ while [[ $# -gt 0 ]]; do
         MERGED_HAZARD_FILE=$2
         shift 2
         ;;
-    -a | --alpha)
-        echo "Processing 'alpha' option. Input argument is '$2'"
-        ALPHA=$2
-        shift 2
-        ;;
+    #-a | --alpha)
+    #    echo "Processing 'alpha' option. Input argument is '$2'"
+    #    ALPHA=$2
+    #    shift 2
+    #    ;;
     -b | --budget)
         echo "Processing 'budget' option. Input argument is '$2'"
         BUDGET=$2
@@ -133,7 +133,7 @@ tar -xzf $HABITAT_DAMAGE_FILE -C $HABITAT_DAMAGE_DIR >/dev/null 2>&1
 tar -xzf $INTENSITY_FILE -C $INTENSITY_DIR >/dev/null 2>&1
 
 {
-  echo "alpha: $ALPHA"
+  #echo "alpha: $ALPHA"
   echo "budget: $BUDGET"
   echo "full_ignitions_file_path: $FULL_IGNITIONS_CSV"
   echo "rx_burn_units_path: $RX_BURN_UNITS_DIR"

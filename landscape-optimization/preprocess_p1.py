@@ -66,7 +66,7 @@ def get_truncated_ignitions(full_ignitions_df, burn_file_names):
 ## Call to get truncated ignitions list
 #truncated_ignitions_df = get_truncated_ignitions(full_ignitions_df, burn_file_names)
 
-def get_burn_area_values(truncated_ignitions_df):
+def get_burn_area_values(truncated_ignitions_df, burned_area_dir, bldg_dmg_file_names, habitat_dmg_file_names, config):
     values_df = pd.DataFrame(columns = ['filename', 'x_ignition', 'y_ignition', 
                                     'burn_area', 'bldg_dmg', 'habitat_dmg', 'xmin', 'ymin', 'xmax', 'ymax'])
     values_df[['filename', 'x_ignition', 'y_ignition']] =  truncated_ignitions_df[['filename', 'x_ignition', 'y_ignition']]
@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
     ## Call when values_df needs to be created
     truncated_ignitions_df = get_truncated_ignitions(full_ignitions_df, burn_file_names)
-    values_df = get_burn_area_values(truncated_ignitions_df)
+    values_df = get_burn_area_values(truncated_ignitions_df, burned_area_dir, bldg_dmg_file_names, habitat_dmg_file_names, config)
     write_csv_to_file(values_file_path, values_df)
 
     # ## Call to generate prevention_df

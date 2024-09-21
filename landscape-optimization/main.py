@@ -186,11 +186,15 @@ if __name__ == "__main__":
         sys.exit()
 
     # Preprocessing 
-    #full_ignitions_df = pd.read_csv(full_ignitions_file_path)
-    full_ignitions_df = []
+    full_ignitions_df = pd.read_csv(full_ignitions_file_path)
+    #full_ignitions_df = []
     burn_file_names = glob(os.path.join(burned_area_dir, '*.tif'))
     bldg_dmg_file_names = glob(os.path.join(bldg_dmg_dir, '*.tif'))
     habitat_dmg_file_names = glob(os.path.join(habitat_dmg_dir, '*.tif'))
+
+    # Update bounds again
+    truncated_ignitions_df = get_truncated_ignitions(full_ignitions_df, burn_file_names)
+    values_df = get_burn_area_values(truncated_ignitions_df, burned_area_dir, bldg_dmg_file_names, habitat_dmg_file_names, config)
 
     print("Run main function")
 

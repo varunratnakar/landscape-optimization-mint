@@ -7,7 +7,7 @@ BUILDING_DAMAGE_FILE=""
 HABITAT_DAMAGE_FILE=""
 INTENSITY_FILE=""
 
-ALPHA=0.1
+#ALPHA=0.1
 BUDGET=10
 
 while [[ $# -gt 0 ]]; do
@@ -90,7 +90,7 @@ tar -xzf $HABITAT_DAMAGE_FILE -C $HABITAT_DAMAGE_DIR >/dev/null 2>&1
 tar -xzf $INTENSITY_FILE -C $INTENSITY_DIR >/dev/null 2>&1
 
 {
-  echo "alpha: 0.1"
+  #echo "alpha: 0.1"
   echo "budget: 10"
   echo "full_ignitions_file_path: $FULL_IGNITIONS_CSV"  
   echo "rx_burn_units_path: $RX_BURN_UNITS_DIR"  
